@@ -1,22 +1,22 @@
 # Android Crypto Monitor
 
-API Android para monitoramento de cotações de criptomoedas usando a API do Mercado Bitcoin
+API Android para monitoramento de cotações do Bitcoin usando a API do Mercado Bitcoin
 
 ## Estrutura do Projeto
 
 
-### Modelos de Dados (model package)
+### Modelos de Dados
 
   * TickerResponse.kt: Modelo da resposta da API
 
   * Ticker.kt: Modelo com dados do ticker (preços, volume, etc.)
 
 
-### Serviço de API (service package)
+### Serviço de API 
 
   *  MercadoBitcoinService.kt: Interface Retrofit para a API
 
-  *  MercadoBitcoinServiceFactory.kt: Fábrica para criar instância do serviço
+  *  MercadoBitcoinServiceFactory.kt: Factory para criar instância do serviço
 
 ## Funcionalidades
 
