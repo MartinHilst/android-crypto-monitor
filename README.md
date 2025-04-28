@@ -4,46 +4,47 @@ API Android para monitoramento de cotações do Bitcoin usando a API do Mercado 
 
 ## Estrutura do Projeto
 
+### 1. TickerResponse e Ticker
 
-### Modelos de Dados
+   * TickerResponse: Classe que representa a resposta da API, contendo um objeto Ticker
 
-  * TickerResponse.kt: Modelo da resposta da API
+   * Ticker: Classe que armazena os dados da cotação, incluindo:
 
-  * Ticker.kt: Modelo com dados do ticker (preços, volume, etc.)
+       - Valores (high, low, last, buy, sell)
 
+       - Volume de negociação (vol)
 
-### Serviço de API 
+       - Momento da cotação (date)
 
-  *  MercadoBitcoinService.kt: Interface Retrofit para a API
+### 2. MercadoBitcoinServiceFactory
 
-  *  MercadoBitcoinServiceFactory.kt: Factory para criar instância do serviço
+Responsável por criar uma instância do serviço Retrofit configurada para:
 
-## Funcionalidades
+   * Usar a URL base do Mercado Bitcoin
 
-  * Obtém dados de ticker do Bitcoin da API do Mercado Bitcoin
+   * Converter respostas JSON para objetos Kotlin usando Gson
 
-  * Parseia resposta JSON para objetos Kotlin
+### 3. MercadoBitcoinService
 
-  * Factory configurada para criar o serviço de API
+Interface que define os endpoints da API:
 
-## Configuração
+    getTicker(): Requisição GET para obter os dados de ticker do Bitcoin
 
-  * URL base da API:
+### 4. MainActivity 
 
-    - https://www.mercadobitcoin.net/  
+Responsável pela UI e interação com o usuário:
 
-## Como Usar
+   * Configura a Toolbar
 
-Para obter os dados do ticker:
-  
-```
-val service = MercadoBitcoinServiceFactory().create()  
-val response = service.getTicker()  
-if (response.isSuccessful) {  
-    val ticker = response.body()?.ticker  
-    // Usar os dados (high, low, last, etc.)  
-}  
-```
+   * Implementa o botão de refresh
+
+   * Faz chamadas à API usando corrotinas
+
+   * Atualiza a UI com os dados recebidos
+
+   * Formata valores e datas para exibição
+
+   * Trata erros e exibe mensagens
 
 ## Dependências
 
