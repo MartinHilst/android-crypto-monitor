@@ -26,9 +26,9 @@ Responsável por criar uma instância do serviço Retrofit configurada para:
 
 ### 3. MercadoBitcoinService
 
-Interface que define os endpoints da API:
+* Interface que define os endpoints da API:
 
-    getTicker(): Requisição GET para obter os dados de ticker do Bitcoin
+    - getTicker(): Requisição GET para obter os dados de ticker do Bitcoin
 
 ### 4. MainActivity 
 
