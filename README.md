@@ -51,8 +51,15 @@ if (response.isSuccessful) {
 
   * Gson - Conversão JSON-Kotlin
 
-Referências
+## Referências
 
   * https://square.github.io/retrofit/
 
   * https://github.com/google/gson
+
+# Evidências
+
+
+![Prova1](https://github.com/user-attachments/assets/62b9081a-1419-495d-aa98-fbfd03a551db)
+
+![Prova2](https://github.com/user-attachments/assets/21b738fb-cafb-4d9d-b3eb-f468a982160c)
