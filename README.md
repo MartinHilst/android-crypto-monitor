@@ -4,48 +4,130 @@ API Android para monitoramento de cotações do Bitcoin usando a API do Mercado 
 
 ## Estrutura do Projeto
 
-### 1. TickerResponse e Ticker
+### 1. TickerResponse
 
-   * TickerResponse: Classe que representa a resposta da API, contendo um objeto Ticker
+```
+class TickerResponse(
+    val ticker: Ticker
+)
+```
+* Representa a resposta da API do Mercado Bitcoin.
 
-   * Ticker: Classe que armazena os dados da cotação, incluindo:
 
-       - Valores (high, low, last, buy, sell)
+```
+class Ticker(
+    val high: String,    // Maior preço recente  
+    val low: String,     // Menor preço recente  
+    val vol: String,     // Volume negociado  
+    val last: String,    // Último preço negociado  
+    val buy: String,     // Melhor preço de compra  
+    val sell: String,    // Melhor preço de venda  
+    val date: Long       // Timestamp da última atualização  
+)
+```
+* Armazena os dados da cotação do Bitcoin.
 
-       - Volume de negociação (vol)
+### 2. MercadoBitcoinService
 
-       - Momento da cotação (date)
+```
+interface MercadoBitcoinService {
+    @GET("api/BTC/ticker/")
+    suspend fun getTicker(): Response<TickerResponse>
+}
+```
+* Define o endpoint da API usando Retrofit.
+  
+  - @GET("api/BTC/ticker/") – Faz uma requisição GET para obter os dados do Bitcoin.
 
-### 2. MercadoBitcoinServiceFactory
+  - suspend fun getTicker() – Função suspensa (usada com corrotinas) que retorna um Response<TickerResponse>.
 
-Responsável por criar uma instância do serviço Retrofit configurada para:
+### 3. MercadoBitcoinServiceFactory
+```
+class MercadoBitcoinServiceFactory {
+    fun create(): MercadoBitcoinService {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://www.mercadobitcoin.net/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
-   * Usar a URL base do Mercado Bitcoin
+        return retrofit.create(MercadoBitcoinService::class.java)
+    }
+}
+```
+* Configura o Retrofit para fazer chamadas à API.
 
-   * Converter respostas JSON para objetos Kotlin usando Gson
+  - baseUrl("https://www.mercadobitcoin.net/") – Define a URL base da API.
+  
+  - addConverterFactory(GsonConverterFactory.create()) – Converte JSON em objetos Kotlin usando Gson.
+  
+  - retrofit.create(MercadoBitcoinService::class.java) – Cria uma instância do serviço.
 
-### 3. MercadoBitcoinService
-
-* Interface que define os endpoints da API:
-
-    - getTicker(): Requisição GET para obter os dados de ticker do Bitcoin
 
 ### 4. MainActivity 
+```
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
 
-Responsável pela UI e interação com o usuário:
+    // Configura a Toolbar
+    val toolbarMain: Toolbar = findViewById(R.id.toolbar_main)
+    configureToolbar(toolbarMain)
 
-   * Configura a Toolbar
+    // Configura o botão Refresh
+    val btnRefresh: Button = findViewById(R.id.btn_refresh)
+    btnRefresh.setOnClickListener {
+        makeRestCall()  // Faz a chamada à API quando clicado
+    }
+}
+```
+* Inicializa a interface e define o comportamento do botão.
+  - makeRestCall() - Faz a chamada à API quando o botão é clicado
 
-   * Implementa o botão de refresh
+```
+private fun makeRestCall() {
+    CoroutineScope(Dispatchers.Main).launch {
+        try {
+            val service = MercadoBitcoinServiceFactory().create()
+            val response = service.getTicker()
 
-   * Faz chamadas à API usando corrotinas
+            if (response.isSuccessful) {
+                val tickerResponse = response.body()
+                updateUI(tickerResponse)  // Atualiza a UI com os novos dados
+            } else {
+                showError(response.code())  // Trata erros de resposta
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this@MainActivity, "Falha na chamada: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+}
+```
 
-   * Atualiza a UI com os dados recebidos
+* Faz a chamada à API e atualiza a interface.
 
-   * Formata valores e datas para exibição
+  - Usa CoroutineScope(Dispatchers.Main) para executar em background e atualizar a UI na thread principal.
 
-   * Trata erros e exibe mensagens
+  - Verifica se a resposta foi bem-sucedida (response.isSuccessful).
 
+  - Atualiza a UI ou exibe erros.
+
+```
+val lastValue = tickerResponse?.ticker?.last?.toDoubleOrNull()
+if (lastValue != null) {
+    val numberFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+    lblValue.text = numberFormat.format(lastValue)
+}
+
+val date = tickerResponse?.ticker?.date?.let { Date(it * 1000L) }
+val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+lblDate.text = date?.let { sdf.format(it) }
+```
+* Exibe os dados formatados na interface.
+
+  - Converte last para Double e formata como moeda brasileira.
+
+  - Converte date para uma data legível.
+  
 ## Dependências
 
   * Retrofit 2 - Requisições HTTP
