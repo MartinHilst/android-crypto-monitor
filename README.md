@@ -1,3 +1,5 @@
+Martin Hilst - RM 99451
+
 # Android Crypto Monitor
 
 API Android para monitoramento de cotações do Bitcoin usando a API do Mercado Bitcoin
